@@ -93,6 +93,7 @@ while True:
         draw_block(SNAKE_COLOR, block.x, block.y)
 
     if apple == head:
+        snake_blocks.append(apple)
         apple = get_random_empty_block()
     
     new_head = SnakeBlock(head.x + d_row, head.y + d_col)
