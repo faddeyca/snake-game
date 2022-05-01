@@ -1,14 +1,19 @@
+from Classes.Propirties import Prop
+
+
 class Block:
-    def __init__(self, x, y, blocks_amount):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.blocks_amount = blocks_amount
 
     def __eq__(self, other):
-        return isinstance(other, Block) and self.x == other.x and self.y == other.y
+        is_this_type = isinstance(other, Block)
+        if is_this_type:
+            return self.x == other.x and self.y == other.y
+        return False
 
     def put_in_boundary(self):
-        self.x += self.blocks_amount
-        self.x %= self.blocks_amount
-        self.y += self.blocks_amount
-        self.y %= self.blocks_amount
+        self.x += Prop.blocks_amount
+        self.x %= Prop.blocks_amount
+        self.y += Prop.blocks_amount
+        self.y %= Prop.blocks_amount
