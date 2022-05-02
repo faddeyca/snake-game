@@ -1,5 +1,4 @@
 import pygame
-from pathlib import Path
 import sys
 import random
 
@@ -7,26 +6,26 @@ from Classes.Block import *
 from Classes.Food import *
 from Classes.Propirties import *
 from Classes.Colors import *
+from Classes.Sounds import *
 
 
-class Level:
-    def __init__(self, screen, size):
-        self.eating_sound = pygame.mixer.Sound(Path("sounds/food.mp3"))
-        self.hurt_sound = pygame.mixer.Sound(Path("sounds/hurt.mp3"))
-        self.bonus_sound = pygame.mixer.Sound(Path("sounds/bonus.mp3"))
-        self.death_sound = pygame.mixer.Sound(Path("sounds/death.mp3"))
-        self.drink_sound = pygame.mixer.Sound(Path("sounds/drink.mp3"))
+class Game:
+    def __init__(self, screen, size, snake_blocks, walls, lvl_req, d_x, d_y):
+
         self.screen = screen
         self.size = size
+
+        self.snake_blocks = snake_blocks
+        self.walls = walls
+        self.lvl_req = lvl_req
+
+        self.d_x = d_x
+        self.d_y = d_y
+
         self.timer = pygame.time.Clock()
         self.score = 0
         self.speed = 1
         self.lives = 3
-        self.snake_blocks = [Block(Prop.blocks_amount // 2 - 1,
-                                   Prop.blocks_amount // 2 - 1),
-                             Block(Prop.blocks_amount // 2 - 1,
-                                   Prop.blocks_amount // 2)]
-        self.walls = [Block(5, 5)]
 
     def start(self):
         iteration = 0
@@ -39,8 +38,6 @@ class Level:
         bonus = Food(far_block, FoodType.scoreUp)
 
         bonus_flag = False
-        d_x = 0
-        d_y = 1
 
         cheatsB = False
         cheatsK = False
@@ -51,18 +48,18 @@ class Level:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    if (event.key == pygame.K_UP or event.key == pygame.K_w) and d_y != 0:
-                        d_x = -1
-                        d_y = 0
-                    elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and d_y != 0:
-                        d_x = 1
-                        d_y = 0
-                    elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and d_x != 0:
-                        d_x = 0
-                        d_y = -1
-                    elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and d_x != 0:
-                        d_x = 0
-                        d_y = 1
+                    if (event.key == pygame.K_UP or event.key == pygame.K_w) and self.d_y != 0:
+                        self.d_x = -1
+                        self.d_y = 0
+                    elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and self.d_y != 0:
+                        self.d_x = 1
+                        self.d_y = 0
+                    elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and self.d_x != 0:
+                        self.d_x = 0
+                        self.d_y = -1
+                    elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and self.d_x != 0:
+                        self.d_x = 0
+                        self.d_y = 1
                     elif event.key == pygame.K_b:
                         if cheatsB:
                             cheatsB = False
@@ -96,20 +93,22 @@ class Level:
                 if iteration - fixed_iteration >= 20:
                     bonus = Food(far_block, FoodType.scoreUp)
                 if bonus.block == head:
-                    self.bonus_sound.play()
+                    Sounds.bonus_sound.play()
                     self.score += 10
                     bonus = Food(far_block, FoodType.scoreUp)
                 else:
                     self.draw_block(Color.yellow, bonus.block.x, bonus.block.y)
 
-            flag = True
+            length_flag = True
             if apple.block == head:
                 self.score += 1
                 if apple.type == FoodType.lengthUp:
-                    self.eating_sound.play()
-                    flag = False
+                    Sounds.eating_sound.play()
+                    length_flag = False
+                    if len(self.snake_blocks) == self.lvl_req:
+                        return True
                 if apple.type == FoodType.speedUp:
-                    self.drink_sound.play()
+                    Sounds.drink_sound.play()
                     if not cheatsK:
                         self.speed += 1
                 if self.score % 5 == 0:
@@ -117,21 +116,21 @@ class Level:
                 else:
                     apple = Food(self.get_random_block(), FoodType.lengthUp)
             else:
-                flag = True
+                length_flag = True
 
-            new_head = Block(head.x + d_x, head.y + d_y)
+            new_head = Block(head.x + self.d_x, head.y + self.d_y)
 
             if (not cheatsB) and (new_head in self.snake_blocks or new_head in self.walls):
                 if self.lives == 1:
-                    self.death_sound.play()
-                    break
+                    Sounds.death_sound.play()
+                    return False
                 if iteration - deathless_iteration > 5:
-                    self.hurt_sound.play()
+                    Sounds.hurt_sound.play()
                     self.lives -= 1
                     deathless_iteration = iteration
 
             self.snake_blocks.append(new_head)
-            if flag or cheatsK:
+            if length_flag or cheatsK:
                 self.snake_blocks.pop(0)
 
             pygame.display.flip()
