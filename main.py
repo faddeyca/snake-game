@@ -15,7 +15,6 @@ def start():
 
 
 def start_game(screen, size):
-    pygame.mixer.music.play()
     lvl = Level(screen, size)
     lvl.start()
 
@@ -23,7 +22,8 @@ def start_game(screen, size):
 def build_window():
     pygame.init()
     pygame.mixer.music.load(
-        Path("sounds/Dramatic-emotional-background-music.mp3"))
+        Path("sounds/music.mp3"))
+    pygame.mixer.music.play()
     size = [Prop.block_size * Prop.blocks_amount +
             2 * Prop.block_size + Prop.delta * Prop.blocks_amount,
             Prop.block_size * Prop.blocks_amount +

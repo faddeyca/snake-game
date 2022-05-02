@@ -1,4 +1,5 @@
 import pygame
+from pathlib import Path
 import sys
 import random
 
@@ -10,6 +11,11 @@ from Classes.Colors import *
 
 class Level:
     def __init__(self, screen, size):
+        self.eating_sound = pygame.mixer.Sound(Path("sounds/food.mp3"))
+        self.hurt_sound = pygame.mixer.Sound(Path("sounds/hurt.mp3"))
+        self.bonus_sound = pygame.mixer.Sound(Path("sounds/bonus.mp3"))
+        self.death_sound = pygame.mixer.Sound(Path("sounds/death.mp3"))
+        self.drink_sound = pygame.mixer.Sound(Path("sounds/drink.mp3"))
         self.screen = screen
         self.size = size
         self.timer = pygame.time.Clock()
@@ -90,6 +96,7 @@ class Level:
                 if iteration - fixed_iteration >= 20:
                     bonus = Food(far_block, FoodType.scoreUp)
                 if bonus.block == head:
+                    self.bonus_sound.play()
                     self.score += 10
                     bonus = Food(far_block, FoodType.scoreUp)
                 else:
@@ -99,8 +106,10 @@ class Level:
             if apple.block == head:
                 self.score += 1
                 if apple.type == FoodType.lengthUp:
+                    self.eating_sound.play()
                     flag = False
                 if apple.type == FoodType.speedUp:
+                    self.drink_sound.play()
                     if not cheatsK:
                         self.speed += 1
                 if self.score % 5 == 0:
@@ -114,9 +123,10 @@ class Level:
 
             if (not cheatsB) and (new_head in self.snake_blocks or new_head in self.walls):
                 if self.lives == 1:
-                    pygame.mixer.music.stop()
+                    self.death_sound.play()
                     break
                 if iteration - deathless_iteration > 5:
+                    self.hurt_sound.play()
                     self.lives -= 1
                     deathless_iteration = iteration
 
