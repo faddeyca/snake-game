@@ -23,9 +23,7 @@ class Game:
         self.d_y = d_y
 
         self.timer = pygame.time.Clock()
-        self.score = 0
         self.speed = 1
-        self.lives = 3
 
     def start(self):
         iteration = 0
@@ -94,14 +92,14 @@ class Game:
                     bonus = Food(far_block, FoodType.scoreUp)
                 if bonus.block == head:
                     Sounds.bonus_sound.play()
-                    self.score += 10
+                    Info.score += 10
                     bonus = Food(far_block, FoodType.scoreUp)
                 else:
                     self.draw_block(Color.yellow, bonus.block.x, bonus.block.y)
 
             length_flag = True
             if apple.block == head:
-                self.score += 1
+                Info.score += 1
                 if apple.type == FoodType.lengthUp:
                     Sounds.eating_sound.play()
                     length_flag = False
@@ -111,7 +109,7 @@ class Game:
                     Sounds.drink_sound.play()
                     if not cheatsK:
                         self.speed += 1
-                if self.score % 5 == 0:
+                if Info.score % 5 == 0:
                     apple = Food(self.get_random_block(), FoodType.speedUp)
                 else:
                     apple = Food(self.get_random_block(), FoodType.lengthUp)
@@ -121,12 +119,12 @@ class Game:
             new_head = Block(head.x + self.d_x, head.y + self.d_y)
 
             if (not cheatsB) and (new_head in self.snake_blocks or new_head in self.walls):
-                if self.lives == 1:
+                if Info.lives == 1:
                     Sounds.death_sound.play()
                     return False
                 if iteration - deathless_iteration > 5:
                     Sounds.hurt_sound.play()
-                    self.lives -= 1
+                    Info.lives -= 1
                     deathless_iteration = iteration
 
             self.snake_blocks.append(new_head)
@@ -179,9 +177,9 @@ class Game:
 
     def draw_text(self):
         courier = pygame.font.SysFont('courier', 18)
-        text_total = courier.render(f"Score: {self.score}", 0, Color.white)
+        text_total = courier.render(f"Score: {Info.score}", 0, Color.white)
         text_speed = courier.render(f"Speed: {self.speed}", 0, Color.white)
-        text_lives = courier.render(f"Lives: {self.lives}", 0, Color.white)
+        text_lives = courier.render(f"Lives: {Info.lives}", 0, Color.white)
         self.screen.blit(text_total, (Prop.block_size, Prop.block_size))
         self.screen.blit(text_speed, (Prop.block_size+150, Prop.block_size))
         self.screen.blit(text_lives, (Prop.block_size+300, Prop.block_size))
