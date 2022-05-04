@@ -2,7 +2,7 @@ class Color:
     """
     A class to represent a color in RGB terms.
     """
-    # Light blue
+    #  Light blue
     up_menu = (0, 177, 205)
     #  Green
     snake_body = (0, 120, 0)

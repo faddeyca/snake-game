@@ -104,7 +104,7 @@ class Game:
                     elif event.key == pygame.K_k:
                         cheatsK = not cheatsK
                     elif event.key == pygame.K_m:
-                        score += 100
+                        Info.score += 100
                     elif event.key == pygame.K_ESCAPE:
                         pause = True
                         self.d_x = 0
@@ -164,17 +164,19 @@ class Game:
                 new_head = Block(head.x + self.d_x, head.y + self.d_y)
 
                 if (not cheatsB) and (new_head in self.snake_blocks or new_head in self.walls):
-                    if Info.lives == 1:
-                        Sounds.death_sound.play()
-                        return False
                     if iteration - deathless_iteration > 5:
                         Sounds.hurt_sound.play()
                         Info.lives -= 1
+                        if Info.lives == 0:
+                            Sounds.death_sound.play()
+                            return False
                         deathless_iteration = iteration
 
                 self.snake_blocks.append(new_head)
                 if length_flag or cheatsK:
                     self.snake_blocks.pop(0)
+                if cheatsK and not length_flag:
+                    self.lvl_req -= 1
 
             pygame.display.flip()
             iteration += 1
@@ -257,11 +259,7 @@ class Game:
         text_lives = courier.render(f"Lives: {Info.lives}", 0, Color.white)
         left = self.lvl_req - len(self.snake_blocks) + 1
         text_left = courier.render(f"Left: {left}", 0, Color.white)
-        self.screen.blit(text_score, (20,
-                                      20))
-        self.screen.blit(text_speed, (20 + int(150 * k),
-                                      20))
-        self.screen.blit(text_lives, (20,
-                                      20 + 40))
-        self.screen.blit(text_left, (20 + int(150 * k),
-                                     20 + 40))
+        self.screen.blit(text_score, (20, 20))
+        self.screen.blit(text_speed, (50 + int(150 * k), 20))
+        self.screen.blit(text_lives, (20, 60))
+        self.screen.blit(text_left, (50 + int(150 * k), 60))
