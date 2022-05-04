@@ -138,7 +138,11 @@ class Game:
                         Info.score += 10
                         bonus = Food(far_block, FoodType.scoreUp)
                     else:
-                        self.draw_block(Color.yellow,
+                        if iteration % 2 == 0:
+                            self.draw_block(Color.yellow,
+                                        bonus.block.x, bonus.block.y)
+                        else:
+                            self.draw_block(Color.green,
                                         bonus.block.x, bonus.block.y)
 
                 length_flag = True

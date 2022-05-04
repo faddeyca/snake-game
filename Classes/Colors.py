@@ -16,4 +16,5 @@ class Color:
     yellow = (255, 255, 0)
 
     black = (0, 0, 0)
+    green = (0, 200, 0)
     white = (255, 255, 255)
