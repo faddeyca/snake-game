@@ -3,7 +3,11 @@ from Classes.Block import *
 
 
 def start_level_1():
-    Info.blocks_amount = 15
+    '''
+    Starts the level with specific parameters: Amount of blocks in row and columns, snake coords, walls coords, win level requirment.
+    All further functions in this files do the same.
+    '''
+    Info.blocks_amount = 10
     snake_blocks = [Block(5, 5), Block(5, 6)]
     walls = []
     lvl_req = 4
@@ -40,7 +44,7 @@ def start_level_2():
     lvl_req = 15
 
     game = Game(snake_blocks, walls, lvl_req)
-    
+
     res = game.start()
     return res
 
@@ -95,6 +99,6 @@ def start_level_3():
     lvl_req = 15
 
     game = Game(snake_blocks, walls, lvl_req)
-    
+
     res = game.start()
     return res

@@ -10,26 +10,61 @@ from Classes.Sounds import *
 
 
 class Game:
+    """
+    A class to represent a level.
+
+    ...
+
+    Attributes
+    ----------
+    size : [int, int]
+        Current pygame screen size
+    screen : pygame.display
+        Current screen
+
+    d_x : int
+        Snake's direction in row
+    d_y : int
+        Snake's direction in column
+    speed : int
+        Current snake's speed
+    snake_blocks : Blocks array
+        Snake's body and head array: (0) - tail, (-1) - head
+    walls : Blocks array
+        Walls positions
+    lvl_req : int
+        Required length of the snake to win this level
+    timer : pygame.time.Clock
+        Timer for iterations check
+    
+
+    Methods
+    -------
+    put_in_boundary():
+        Puts the block in field's boundary.
+    """
     def __init__(self, snake_blocks, walls, lvl_req):
-        pygame.display.set_caption("Snake")
         self.size = [Prop.block_size * Info.blocks_amount +
-            2 * Prop.block_size + Prop.delta * Info.blocks_amount,
-            Prop.block_size * Info.blocks_amount +
-            2 * Prop.block_size+Prop.delta * Info.blocks_amount +
-            Prop.up_length]
+                     2 * Prop.block_size + Prop.delta * Info.blocks_amount,
+                     Prop.block_size * Info.blocks_amount +
+                     2 * Prop.block_size+Prop.delta * Info.blocks_amount +
+                     Prop.up_length]
         self.screen = pygame.display.set_mode(self.size)
 
         self.d_x = 0
         self.d_y = 0
+        self.speed = 1
 
         self.snake_blocks = snake_blocks
         self.walls = walls
         self.lvl_req = lvl_req
 
         self.timer = pygame.time.Clock()
-        self.speed = 1
 
     def start(self):
+        '''
+        Starts the level
+        '''
         iteration = 0
         fixed_iteration = 0
         deathless_iteration = 0
@@ -103,7 +138,8 @@ class Game:
                         Info.score += 10
                         bonus = Food(far_block, FoodType.scoreUp)
                     else:
-                        self.draw_block(Color.yellow, bonus.block.x, bonus.block.y)
+                        self.draw_block(Color.yellow,
+                                        bonus.block.x, bonus.block.y)
 
                 length_flag = True
                 if apple.block == head:
@@ -120,7 +156,8 @@ class Game:
                     if Info.score % 5 == 0:
                         apple = Food(self.get_random_block(), FoodType.speedUp)
                     else:
-                        apple = Food(self.get_random_block(), FoodType.lengthUp)
+                        apple = Food(self.get_random_block(),
+                                     FoodType.lengthUp)
                 else:
                     length_flag = True
 
@@ -144,10 +181,22 @@ class Game:
             self.timer.tick(3 + self.speed)
 
     def draw_window(self):
+        '''
+        Draws window
+        '''
         self.screen.fill(Color.black)
-        pygame.draw.rect(self.screen, Color.menu_color, [0, 0, self.size[0], Prop.up_length])
+        pygame.draw.rect(self.screen, Color.up_menu,
+                         [0, 0, self.size[0], Prop.up_length])
 
     def draw_block(self, color, row, column):
+        '''
+        Draws a block withs specific parameters.
+
+            Parameters:
+                    color (Color): A color of the block
+                    row (int): Position in row
+                    column (int): Position in column
+        '''
         pygame.draw.rect(self.screen, color, [Prop.block_size +
                                               column * Prop.block_size +
                                               Prop.delta * (column + 1),
@@ -159,6 +208,12 @@ class Game:
                                               Prop.block_size])
 
     def get_random_block(self):
+        '''
+        Returns a random block that is not a wall or a part of snake.
+
+            Returns:
+                    empty_block (Block): Random empty block
+        '''
         x = random.randint(0, Info.blocks_amount - 1)
         y = random.randint(0, Info.blocks_amount - 1)
         empty_block = Block(x, y)
@@ -169,6 +224,9 @@ class Game:
         return empty_block
 
     def draw_env(self, apple):
+        '''
+        Draws all blocks: field, walls, apples, snake, snake's head.
+        '''
         for row in range(Info.blocks_amount):
             for column in range(Info.blocks_amount):
                 self.draw_block(Color.white, row, column)
@@ -182,18 +240,28 @@ class Game:
             self.draw_block(Color.gray, apple.block.x, apple.block.y)
 
         for i in range(len(self.snake_blocks) - 1):
-            self.draw_block(Color.green, self.snake_blocks[i].x, self.snake_blocks[i].y)
+            self.draw_block(Color.snake_body,
+                            self.snake_blocks[i].x, self.snake_blocks[i].y)
 
-        self.draw_block(Color.head_color, self.snake_blocks[-1].x, self.snake_blocks[-1].y)
+        self.draw_block(Color.snake_head,
+                        self.snake_blocks[-1].x, self.snake_blocks[-1].y)
 
     def draw_text(self):
+        '''
+        Draws text in up menu: score, curreent speed, lives left, apples to eat left
+        '''
         k = Info.blocks_amount / 20
         courier = pygame.font.SysFont('courier', int(25 * k))
-        text_total = courier.render(f"Score: {Info.score}", 0, Color.white)
+        text_score = courier.render(f"Score: {Info.score}", 0, Color.white)
         text_speed = courier.render(f"Speed: {self.speed}", 0, Color.white)
         text_lives = courier.render(f"Lives: {Info.lives}", 0, Color.white)
-        text_left = courier.render(f"Left: {self.lvl_req - len(self.snake_blocks) + 1}", 0, Color.white)
-        self.screen.blit(text_total, (Prop.block_size, Prop.block_size))
-        self.screen.blit(text_speed, (Prop.block_size + int(150 * k), Prop.block_size))
-        self.screen.blit(text_lives, (Prop.block_size, Prop.block_size + 40))
-        self.screen.blit(text_left, (Prop.block_size + int(150 * k), Prop.block_size + 40))
+        left = self.lvl_req - len(self.snake_blocks) + 1
+        text_left = courier.render(f"Left: {left}", 0, Color.white)
+        self.screen.blit(text_score, (20,
+                                      20))
+        self.screen.blit(text_speed, (20 + int(150 * k),
+                                      20))
+        self.screen.blit(text_lives, (20,
+                                      20 + 40))
+        self.screen.blit(text_left, (20 + int(150 * k),
+                                     20 + 40))
