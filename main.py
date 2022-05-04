@@ -10,35 +10,32 @@ def start():
     pygame.mixer.music.load(
         Path("sounds/music.mp3"))
     pygame.mixer.music.play()
-    screen, size = build_screen()
+    screen = build_menu()
     menu = pygame_menu.Menu("Menu", 300, 200,
                             theme=pygame_menu.themes.THEME_BLUE)
-    menu.add.button('Play', lambda: start_game(screen, size))
+    menu.add.button('Play', start_game)
     menu.add.button('Quit', pygame_menu.events.EXIT)
     menu.mainloop(screen)
 
 
-def start_game(screen, size):
-    res = start_level_1(screen, size)
+def start_game():
+    res = start_level_1()
 
     if res:
         Sounds.bonus_sound.play()
-        res = start_level_2(screen, size)
+        res = start_level_2()
 
     if res:
         Sounds.bonus_sound.play()
-        res = start_level_3(screen, size)
+        res = start_level_3()
+
+    build_menu()
 
 
-def build_screen():
+def build_menu():
     pygame.init()
     pygame.display.set_caption("Snake")
-    size = [Prop.block_size * Prop.blocks_amount +
-            2 * Prop.block_size + Prop.delta * Prop.blocks_amount,
-            Prop.block_size * Prop.blocks_amount +
-            2 * Prop.block_size+Prop.delta * Prop.blocks_amount +
-            Prop.up_length]
-    return pygame.display.set_mode(size), size
+    return pygame.display.set_mode([500, 500])
 
 
 if __name__ == "__main__":

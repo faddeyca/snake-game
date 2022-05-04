@@ -1,6 +1,7 @@
 class Color:
-    HEADER_COLOR = (0, 204, 153)
+    menu_color = (0, 204, 153)
     green = (0, 120, 0)
+    head_color = (0, 80, 0)
     black = (0, 0, 0)
     white = (255, 255, 255)
     blue = (204, 255, 255)

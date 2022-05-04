@@ -1,4 +1,4 @@
-from Classes.Propirties import Prop
+from Classes.Propirties import Info
 
 
 class Block:
@@ -13,7 +13,7 @@ class Block:
         return False
 
     def put_in_boundary(self):
-        self.x += Prop.blocks_amount
-        self.x %= Prop.blocks_amount
-        self.y += Prop.blocks_amount
-        self.y %= Prop.blocks_amount
+        self.x += Info.blocks_amount
+        self.x %= Info.blocks_amount
+        self.y += Info.blocks_amount
+        self.y %= Info.blocks_amount
