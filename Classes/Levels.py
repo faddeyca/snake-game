@@ -9,6 +9,9 @@ def start_level_1(started_from_save):
     All further functions in this files do the same.
     '''
     if not started_from_save:
+        Info.d_x = 0
+        Info.d_y = 0
+        Info.speed = 1
         Info.current_level = 1
         Info.blocks_amount = 10
         Info.snake_blocks = [Block(5, 5), Block(5, 6)]
@@ -23,6 +26,9 @@ def start_level_1(started_from_save):
 
 def start_level_2(started_from_save):
     if not started_from_save:
+        Info.d_x = 0
+        Info.d_y = 0
+        Info.speed = 1
         Info.current_level = 2
         Info.blocks_amount = 20
         Info.snake_blocks = [Block(9, 9), Block(9, 10)]
@@ -56,6 +62,9 @@ def start_level_2(started_from_save):
 
 def start_level_3(started_from_save):
     if not started_from_save:
+        Info.d_x = 0
+        Info.d_y = 0
+        Info.speed = 1
         Info.current_level = 3
         Info.blocks_amount = 20
         Info.snake_blocks = [Block(9, 14), Block(9, 15)]
