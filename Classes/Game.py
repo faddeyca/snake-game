@@ -7,6 +7,8 @@ from Classes.Food import *
 from Classes.Propirties import *
 from Classes.Colors import *
 from Classes.Sounds import *
+from Classes.Level_Info import Info
+from Classes.Saver import save
 
 
 class Game:
@@ -43,7 +45,7 @@ class Game:
     put_in_boundary():
         Puts the block in field's boundary.
     """
-    def __init__(self, snake_blocks, walls, lvl_req):
+    def __init__(self):
         self.size = [Prop.block_size * Info.blocks_amount +
                      2 * Prop.block_size + Prop.delta * Info.blocks_amount,
                      Prop.block_size * Info.blocks_amount +
@@ -54,10 +56,6 @@ class Game:
         self.d_x = 0
         self.d_y = 0
         self.speed = 1
-
-        self.snake_blocks = snake_blocks
-        self.walls = walls
-        self.lvl_req = lvl_req
 
         self.timer = pygame.time.Clock()
 
@@ -109,6 +107,10 @@ class Game:
                         pause = True
                         self.d_x = 0
                         self.d_y = 0
+                    elif event.key == pygame.K_p:
+                        if pause:
+                            save(Info.snake_blocks)
+
 
             if self.d_x != 0 or self.d_y != 0:
                 pause = False
@@ -116,7 +118,7 @@ class Game:
             self.draw_window()
             self.draw_text()
 
-            head = self.snake_blocks[-1]
+            head = Info.snake_blocks[-1]
             head.put_in_boundary()
 
             self.draw_env(apple)
@@ -151,7 +153,7 @@ class Game:
                     if apple.type == FoodType.lengthUp:
                         Sounds.eating_sound.play()
                         length_flag = False
-                        if len(self.snake_blocks) == self.lvl_req:
+                        if len(Info.snake_blocks) == Info.lvl_req:
                             return True
                     if apple.type == FoodType.speedUp:
                         Sounds.drink_sound.play()
@@ -167,7 +169,7 @@ class Game:
 
                 new_head = Block(head.x + self.d_x, head.y + self.d_y)
 
-                if (not cheatsB) and (new_head in self.snake_blocks or new_head in self.walls):
+                if (not cheatsB) and (new_head in Info.snake_blocks or new_head in Info.walls):
                     if iteration - deathless_iteration > 5:
                         Sounds.hurt_sound.play()
                         Info.lives -= 1
@@ -176,11 +178,11 @@ class Game:
                             return False
                         deathless_iteration = iteration
 
-                self.snake_blocks.append(new_head)
+                Info.snake_blocks.append(new_head)
                 if length_flag or cheatsK:
-                    self.snake_blocks.pop(0)
+                    Info.snake_blocks.pop(0)
                 if cheatsK and not length_flag:
-                    self.lvl_req -= 1
+                    Info.lvl_req -= 1
 
             pygame.display.flip()
             iteration += 1
@@ -223,7 +225,7 @@ class Game:
         x = random.randint(0, Info.blocks_amount - 1)
         y = random.randint(0, Info.blocks_amount - 1)
         empty_block = Block(x, y)
-        while empty_block in self.snake_blocks or empty_block in self.walls:
+        while empty_block in Info.snake_blocks or empty_block in Info.walls:
             x = random.randint(0, Info.blocks_amount - 1)
             y = random.randint(0, Info.blocks_amount - 1)
             empty_block = Block(x, y)
@@ -237,7 +239,7 @@ class Game:
             for column in range(Info.blocks_amount):
                 self.draw_block(Color.white, row, column)
 
-        for wall in self.walls:
+        for wall in Info.walls:
             self.draw_block(Color.black, wall.x, wall.y)
 
         if apple.type == FoodType.lengthUp:
@@ -245,12 +247,12 @@ class Game:
         elif apple.type == FoodType.speedUp:
             self.draw_block(Color.gray, apple.block.x, apple.block.y)
 
-        for i in range(len(self.snake_blocks) - 1):
+        for i in range(len(Info.snake_blocks) - 1):
             self.draw_block(Color.snake_body,
-                            self.snake_blocks[i].x, self.snake_blocks[i].y)
+                            Info.snake_blocks[i].x, Info.snake_blocks[i].y)
 
         self.draw_block(Color.snake_head,
-                        self.snake_blocks[-1].x, self.snake_blocks[-1].y)
+                        Info.snake_blocks[-1].x, Info.snake_blocks[-1].y)
 
     def draw_text(self):
         '''
@@ -261,7 +263,7 @@ class Game:
         text_score = courier.render(f"Score: {Info.score}", 0, Color.white)
         text_speed = courier.render(f"Speed: {self.speed}", 0, Color.white)
         text_lives = courier.render(f"Lives: {Info.lives}", 0, Color.white)
-        left = self.lvl_req - len(self.snake_blocks) + 1
+        left = Info.lvl_req - len(Info.snake_blocks) + 1
         text_left = courier.render(f"Left: {left}", 0, Color.white)
         self.screen.blit(text_score, (20, 20))
         self.screen.blit(text_speed, (50 + int(150 * k), 20))

@@ -1,4 +1,4 @@
-from Classes.Propirties import Info
+from Classes.Level_Info import Info
 
 
 class Block:

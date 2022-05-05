@@ -4,7 +4,7 @@ from pathlib import Path
 
 from Classes.Levels import *
 from Classes.Sounds import *
-from Classes.Propirties import Info
+from Classes.Level_Info import Info
 
 
 def start():
