@@ -53,10 +53,6 @@ class Game:
                      Prop.up_length]
         self.screen = pygame.display.set_mode(self.size)
 
-        self.d_x = 0
-        self.d_y = 0
-        self.speed = 1
-
         self.timer = pygame.time.Clock()
 
     def start(self):
@@ -85,18 +81,18 @@ class Game:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    if (event.key == pygame.K_UP or event.key == pygame.K_w) and (self.d_y != 0 or pause):
-                        self.d_x = -1
-                        self.d_y = 0
-                    elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and (self.d_y or pause) != 0:
-                        self.d_x = 1
-                        self.d_y = 0
-                    elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and (self.d_x or pause) != 0:
-                        self.d_x = 0
-                        self.d_y = -1
-                    elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and (self.d_x or pause) != 0:
-                        self.d_x = 0
-                        self.d_y = 1
+                    if (event.key == pygame.K_UP or event.key == pygame.K_w) and (Info.d_y != 0 or pause):
+                        Info.d_x = -1
+                        Info.d_y = 0
+                    elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and (Info.d_y or pause) != 0:
+                        Info.d_x = 1
+                        Info.d_y = 0
+                    elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and (Info.d_x or pause) != 0:
+                        Info.d_x = 0
+                        Info.d_y = -1
+                    elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and (Info.d_x or pause) != 0:
+                        Info.d_x = 0
+                        Info.d_y = 1
                     elif event.key == pygame.K_b:
                         cheatsB = not cheatsB
                     elif event.key == pygame.K_k:
@@ -104,15 +100,17 @@ class Game:
                     elif event.key == pygame.K_m:
                         Info.score += 100
                     elif event.key == pygame.K_ESCAPE:
+                        if pause:
+                            return False
                         pause = True
-                        self.d_x = 0
-                        self.d_y = 0
+                        Info.d_x = 0
+                        Info.d_y = 0
                     elif event.key == pygame.K_p:
                         if pause:
-                            save(Info.snake_blocks)
+                            save()
 
 
-            if self.d_x != 0 or self.d_y != 0:
+            if Info.d_x != 0 or Info.d_y != 0:
                 pause = False
 
             self.draw_window()
@@ -124,7 +122,7 @@ class Game:
             self.draw_env(apple)
 
             if not pause:
-                if self.speed % 2 == 0:
+                if Info.speed % 2 == 0:
                     if not bonus_flag:
                         bonus_flag = True
                         fixed_iteration = iteration
@@ -158,7 +156,7 @@ class Game:
                     if apple.type == FoodType.speedUp:
                         Sounds.drink_sound.play()
                         if not cheatsK:
-                            self.speed += 1
+                            Info.speed += 1
                     if Info.score % 5 == 0:
                         apple = Food(self.get_random_block(), FoodType.speedUp)
                     else:
@@ -167,7 +165,7 @@ class Game:
                 else:
                     length_flag = True
 
-                new_head = Block(head.x + self.d_x, head.y + self.d_y)
+                new_head = Block(head.x + Info.d_x, head.y + Info.d_y)
 
                 if (not cheatsB) and (new_head in Info.snake_blocks or new_head in Info.walls):
                     if iteration - deathless_iteration > 5:
@@ -186,7 +184,7 @@ class Game:
 
             pygame.display.flip()
             iteration += 1
-            self.timer.tick(3 + self.speed)
+            self.timer.tick(3 + Info.speed)
 
     def draw_window(self):
         '''
@@ -261,7 +259,7 @@ class Game:
         k = Info.blocks_amount / 20
         courier = pygame.font.SysFont('courier', int(25 * k))
         text_score = courier.render(f"Score: {Info.score}", 0, Color.white)
-        text_speed = courier.render(f"Speed: {self.speed}", 0, Color.white)
+        text_speed = courier.render(f"Speed: {Info.speed}", 0, Color.white)
         text_lives = courier.render(f"Lives: {Info.lives}", 0, Color.white)
         left = Info.lvl_req - len(Info.snake_blocks) + 1
         text_left = courier.render(f"Left: {left}", 0, Color.white)
