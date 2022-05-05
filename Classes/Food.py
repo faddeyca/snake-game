@@ -29,3 +29,21 @@ class FoodType(Enum):
     speedUp = 1
     #  Give additional score to player
     scoreUp = 2
+
+
+def enum_to_int(food):
+    if food == FoodType.lengthUp:
+        return 0
+    if food == FoodType.speedUp:
+        return 1
+    if food == FoodType.scoreUp:
+        return 2
+
+
+def int_to_enum(i):
+    if i == 0:
+        return FoodType.lengthUp
+    if i == 1:
+        return FoodType.speedUp
+    if i == 2:
+        return FoodType.scoreUp

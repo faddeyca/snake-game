@@ -59,23 +59,15 @@ class Game:
         '''
         Starts the level
         '''
-        iteration = 0
-        fixed_iteration = 0
-        deathless_iteration = 0
-
         far_block = Block(-100, -100)
 
-        apple = Food(self.get_random_block(), FoodType.lengthUp)
-        bonus = Food(far_block, FoodType.scoreUp)
+        if not Info.started_from_save:
+            Info.apple = Food(self.get_random_block(), FoodType.lengthUp)
+            Info.bonus_food = Food(far_block, FoodType.scoreUp)
 
-        bonus_flag = False
+        pause = 1
 
-        cheatsB = False
-        cheatsK = False
-
-        pause = True
-
-        while True:
+        while 1:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -94,15 +86,15 @@ class Game:
                         Info.d_x = 0
                         Info.d_y = 1
                     elif event.key == pygame.K_b:
-                        cheatsB = not cheatsB
+                        Info.cheatsB = (Info.cheatsB) + 1 % 2
                     elif event.key == pygame.K_k:
-                        cheatsK = not cheatsK
+                        Info.cheatsK = (Info.cheatsK) + 1 % 2
                     elif event.key == pygame.K_m:
                         Info.score += 100
                     elif event.key == pygame.K_ESCAPE:
                         if pause:
-                            return False
-                        pause = True
+                            return 0
+                        pause = 1
                         Info.d_x = 0
                         Info.d_y = 0
                     elif event.key == pygame.K_p:
@@ -111,7 +103,7 @@ class Game:
 
 
             if Info.d_x != 0 or Info.d_y != 0:
-                pause = False
+                pause = 0
 
             self.draw_window()
             self.draw_text()
@@ -119,71 +111,71 @@ class Game:
             head = Info.snake_blocks[-1]
             head.put_in_boundary()
 
-            self.draw_env(apple)
+            self.draw_env()
 
             if not pause:
                 if Info.speed % 2 == 0:
-                    if not bonus_flag:
-                        bonus_flag = True
-                        fixed_iteration = iteration
-                        bonus = Food(self.get_random_block(), FoodType.scoreUp)
+                    if not Info.bonus_flag:
+                        Info.bonus_flag = 1
+                        Info.fixed_iteration = Info.iteration
+                        Info.bonus_food = Food(self.get_random_block(), FoodType.scoreUp)
                 else:
-                    bonus_flag = False
+                    Info.bonus_flag = 0
 
-                if bonus_flag:
-                    if iteration - fixed_iteration >= 20:
-                        bonus = Food(far_block, FoodType.scoreUp)
-                    if bonus.block == head:
+                if Info.bonus_flag:
+                    if Info.iteration - Info.fixed_iteration >= 20:
+                        Info.bonus_food = Food(far_block, FoodType.scoreUp)
+                    if Info.bonus_food.block == head:
                         Sounds.bonus_sound.play()
                         Info.score += 10
-                        bonus = Food(far_block, FoodType.scoreUp)
+                        Info.bonus_food = Food(far_block, FoodType.scoreUp)
                     else:
-                        if iteration % 2 == 0:
+                        if Info.iteration % 2 == 0:
                             self.draw_block(Color.yellow,
-                                        bonus.block.x, bonus.block.y)
+                                        Info.bonus_food.block.x, Info.bonus_food.block.y)
                         else:
                             self.draw_block(Color.green,
-                                        bonus.block.x, bonus.block.y)
+                                        Info.bonus_food.block.x, Info.bonus_food.block.y)
 
-                length_flag = True
-                if apple.block == head:
+                length_flag = 1
+                if Info.apple.block == head:
                     Info.score += 1
-                    if apple.type == FoodType.lengthUp:
+                    if Info.apple.type == FoodType.lengthUp:
                         Sounds.eating_sound.play()
-                        length_flag = False
+                        length_flag = 0
                         if len(Info.snake_blocks) == Info.lvl_req:
-                            return True
-                    if apple.type == FoodType.speedUp:
+                            return 1
+                    if Info.apple.type == FoodType.speedUp:
                         Sounds.drink_sound.play()
-                        if not cheatsK:
+                        if not Info.cheatsK:
                             Info.speed += 1
                     if Info.score % 5 == 0:
-                        apple = Food(self.get_random_block(), FoodType.speedUp)
+                        Info.apple = Food(self.get_random_block(), FoodType.speedUp)
                     else:
-                        apple = Food(self.get_random_block(),
+                        Info.apple = Food(self.get_random_block(),
                                      FoodType.lengthUp)
                 else:
-                    length_flag = True
+                    length_flag = 1
 
                 new_head = Block(head.x + Info.d_x, head.y + Info.d_y)
 
-                if (not cheatsB) and (new_head in Info.snake_blocks or new_head in Info.walls):
-                    if iteration - deathless_iteration > 5:
+                if (not Info.cheatsB) and (new_head in Info.snake_blocks or new_head in Info.walls):
+                    if Info.iteration - Info.deathless_iteration > 5:
                         Sounds.hurt_sound.play()
                         Info.lives -= 1
                         if Info.lives == 0:
                             Sounds.death_sound.play()
-                            return False
-                        deathless_iteration = iteration
+                            return 0
+                        Info.deathless_iteration = Info.iteration
 
                 Info.snake_blocks.append(new_head)
-                if length_flag or cheatsK:
+                if length_flag or Info.cheatsK:
                     Info.snake_blocks.pop(0)
-                if cheatsK and not length_flag:
+                if Info.cheatsK and not length_flag:
                     Info.lvl_req -= 1
+                Info.iteration += 1
 
             pygame.display.flip()
-            iteration += 1
             self.timer.tick(3 + Info.speed)
 
     def draw_window(self):
@@ -229,9 +221,9 @@ class Game:
             empty_block = Block(x, y)
         return empty_block
 
-    def draw_env(self, apple):
+    def draw_env(self):
         '''
-        Draws all blocks: field, walls, apples, snake, snake's head.
+        Draws all blocks: field, walls, Info.apples, snake, snake's head.
         '''
         for row in range(Info.blocks_amount):
             for column in range(Info.blocks_amount):
@@ -240,10 +232,10 @@ class Game:
         for wall in Info.walls:
             self.draw_block(Color.black, wall.x, wall.y)
 
-        if apple.type == FoodType.lengthUp:
-            self.draw_block(Color.red, apple.block.x, apple.block.y)
-        elif apple.type == FoodType.speedUp:
-            self.draw_block(Color.gray, apple.block.x, apple.block.y)
+        if Info.apple.type == FoodType.lengthUp:
+            self.draw_block(Color.red, Info.apple.block.x, Info.apple.block.y)
+        elif Info.apple.type == FoodType.speedUp:
+            self.draw_block(Color.gray, Info.apple.block.x, Info.apple.block.y)
 
         for i in range(len(Info.snake_blocks) - 1):
             self.draw_block(Color.snake_body,
@@ -254,7 +246,7 @@ class Game:
 
     def draw_text(self):
         '''
-        Draws text in up menu: score, curreent speed, lives left, apples to eat left
+        Draws text in up menu: score, curreent speed, lives left, Info.apples to eat left
         '''
         k = Info.blocks_amount / 20
         courier = pygame.font.SysFont('courier', int(25 * k))

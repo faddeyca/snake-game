@@ -3,15 +3,13 @@ from Classes.Block import *
 from Classes.Level_Info import Info
 
 
-def start_level_1(started_from_save):
+def start_level_1():
     '''
     Starts the level with specific parameters: Amount of blocks in row and columns, snake coords, walls coords, win level requirment.
     All further functions in this files do the same.
     '''
-    if not started_from_save:
-        Info.d_x = 0
-        Info.d_y = 0
-        Info.speed = 1
+    if not Info.started_from_save:
+        to_zero()
         Info.current_level = 1
         Info.blocks_amount = 10
         Info.snake_blocks = [Block(5, 5), Block(5, 6)]
@@ -24,11 +22,9 @@ def start_level_1(started_from_save):
     return res
 
 
-def start_level_2(started_from_save):
-    if not started_from_save:
-        Info.d_x = 0
-        Info.d_y = 0
-        Info.speed = 1
+def start_level_2():
+    if not Info.started_from_save:
+        to_zero()
         Info.current_level = 2
         Info.blocks_amount = 20
         Info.snake_blocks = [Block(9, 9), Block(9, 10)]
@@ -60,11 +56,9 @@ def start_level_2(started_from_save):
     return res
 
 
-def start_level_3(started_from_save):
-    if not started_from_save:
-        Info.d_x = 0
-        Info.d_y = 0
-        Info.speed = 1
+def start_level_3():
+    if not Info.started_from_save:
+        to_zero()
         Info.current_level = 3
         Info.blocks_amount = 20
         Info.snake_blocks = [Block(9, 14), Block(9, 15)]
@@ -114,3 +108,15 @@ def start_level_3(started_from_save):
 
     res = game.start()
     return res
+
+
+def to_zero():
+    Info.bonus_flag = 0
+    Info.cheatsB = 0
+    Info.cheatsK = 0
+    Info.d_x = 0
+    Info.d_y = 0
+    Info.speed = 1
+    Info.iteration = 0
+    Info.fixed_iteration = 0
+    Info.deathless_iteration = 0

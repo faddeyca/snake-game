@@ -12,6 +12,17 @@ def save():
     f.write(str(Info.d_x) + "\n")
     f.write(str(Info.d_y) + "\n")
     f.write(str(Info.speed) + "\n")
+    f.write(str(Info.iteration) + "\n")
+    f.write(str(Info.fixed_iteration) + "\n")
+    f.write(str(Info.deathless_iteration) + "\n")
+    f.write(str(Info.bonus_flag) + "\n")
+    f.write(str(Info.cheatsB) + "\n")
+    f.write(str(Info.cheatsK) + "\n")
+
+    f.write(f"{Info.apple.block.x},{Info.apple.block.y}" + "\n")
+    f.write(str(enum_to_int(Info.apple.type)) + "\n")
+    f.write(f"{Info.bonus_food.block.x},{Info.bonus_food.block.y}" + "\n")
+    f.write(str(enum_to_int(Info.bonus_food.type)) + "\n")
 
     for block in Info.snake_blocks:
         f.write(f"{block.x},{block.y};")
@@ -30,6 +41,22 @@ def load_save():
     Info.d_x = int(f.readline())
     Info.d_y = int(f.readline())
     Info.speed = int(f.readline())
+    Info.iteration = int(f.readline())
+    Info.fixed_iteration = int(f.readline())
+    Info.deathless_iteration = int(f.readline())
+    Info.bonus_flag = int(f.readline())
+    Info.cheatsB = int(f.readline())
+    Info.cheatsK = int(f.readline())
+
+    block = f.readline()
+    xy = block.split(',')
+    type = int_to_enum(int(f.readline()))
+    Info.apple = Food(Block(int(xy[0]), int(xy[1])), FoodType(type))
+
+    block = f.readline()
+    xy = block.split(',')
+    type = int_to_enum(int(f.readline()))
+    Info.bonus_food = Food(Block(int(xy[0]), int(xy[1])), FoodType(type))
 
     snake_blocks = f.readline().split(';')
     for block in snake_blocks:
