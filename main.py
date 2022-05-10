@@ -28,9 +28,9 @@ def start():
 
 def init_levels():
     levels = []
-    levels.append(start_level_1)
-    levels.append(start_level_2)
-    levels.append(start_level_3)
+    levels.append(init_level_1())
+    levels.append(init_level_2())
+    levels.append(init_level_3())
     return levels
 
 
@@ -55,11 +55,12 @@ def start_game(levels):
     if not Info.started_from_save:
         Info.score = 0
         Info.lives = 3
+        Info.current_level = 0
 
     for level_index in range(len(levels)):
-        if Info.started_from_save and level_index < Info.current_level:
+        if Info.started_from_save and level_index < Info.current_level - 1:
             continue
-        res = levels[level_index]()
+        res = levels[level_index].start()
         Info.started_from_save = False
         if not res:
             break

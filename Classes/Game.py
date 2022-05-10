@@ -215,12 +215,6 @@ class Game:
                     Info.lives -= 1
                     Info.deathless_iteration = Info.iteration
 
-            if Info.lives == 0:
-                Sounds.death_sound.play()
-                res = 0
-            if len(Info.snake_blocks) >= Info.lvl_req:
-                res = 1
-
             Info.snake_blocks.append(new_head)
             if length_flag or Info.cheatsK:
                 Info.snake_blocks.pop(0)
@@ -233,7 +227,7 @@ class Game:
         if Info.lives == 0:
             Sounds.death_sound.play()
             return 0
-        if len(Info.snake_blocks) >= Info.lvl_req:
+        if len(Info.snake_blocks) >= Info.lvl_req + 1:
             Sounds.bonus_sound.play()
             return 1
         return -1

@@ -121,3 +121,44 @@ def test_saver():
     assert Info.bonus_food == bonus_food
     assert Info.snake_blocks == snake_blocks
     assert Info.walls == walls
+
+
+from Classes.Levels import *
+
+
+def test_level_init():
+    current_level = 1
+    blocks_amount = 10
+    snake_blocks = [Block(5, 5), Block(5, 6)]
+    lvl_req = 5
+    map = "1000000001"\
+          "0000000000"\
+          "0000000000"\
+          "0000000000"\
+          "0000000000"\
+          "0000000000"\
+          "0000000000"\
+          "0000000000"\
+          "0000000000"\
+          "1000000001"
+    
+    level = Level(current_level, blocks_amount, snake_blocks, lvl_req, map)
+
+    assert level.current_level == current_level
+    assert level.blocks_amount == blocks_amount
+    assert level.snake_blocks == snake_blocks
+    assert level.lvl_req == lvl_req
+
+    check = True
+    walls = [Block(0, 0), Block(0, 9), Block(9, 0), Block(9, 9)]
+
+    for block in walls:
+        if not block in level.walls:
+            check = False
+
+    for block in level.walls:
+        if not block in walls:
+            check = False
+
+    assert check
+
