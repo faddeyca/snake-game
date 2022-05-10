@@ -11,7 +11,7 @@ def start_level_1():
     if not Info.started_from_save:
         to_zero()
         Info.current_level = 1
-        Info.blocks_amount = 10
+        Info.blocks_amount = 25
         Info.snake_blocks = [Block(5, 5), Block(5, 6)]
         Info.walls = []
         Info.lvl_req = 15
