@@ -67,68 +67,96 @@ class Game:
 
         self.pause = 1
 
-        self.st = []
-
         while 1:
+            keys = []
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                elif event.type == pygame.KEYDOWN:
-                    if (event.key == pygame.K_UP or event.key == pygame.K_w) and (Info.d_y != 0 or self.pause):
-                        self.st.append(lambda: self.Move_up())
-                    if (event.key == pygame.K_DOWN or event.key == pygame.K_s) and (Info.d_y or self.pause) != 0:
-                        self.st.append(lambda: self.Move_down())
-                    if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and (Info.d_x or self.pause) != 0:
-                        self.st.append(lambda: self.Move_left())
-                    if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and (Info.d_x or self.pause) != 0:
-                        self.st.append(lambda: self.Move_right())
-                    if event.key == pygame.K_b:
-                        Info.cheatsB = (Info.cheatsB) + 1 % 2
-                    if event.key == pygame.K_k:
-                        Info.cheatsK = (Info.cheatsK) + 1 % 2
-                    if event.key == pygame.K_m:
-                        Info.score += 100
-                    if event.key == pygame.K_ESCAPE:
-                        if self.pause:
-                            return 0
-                        self.pause = 1
-                        Info.d_x = 0
-                        Info.d_y = 0
-                    if event.key == pygame.K_p:
-                        if self.pause:
-                            save()
-            if len(self.st) > 0:
-                f = self.st.pop()
-                f()
-                self.Move()
-            if len(self.st) > 0:
-                f = self.st.pop()
-                f()
-                self.Move()
-            self.Move()
+                if event.type == pygame.KEYDOWN:
+                    keys.append(event.key)
+                    if len(keys) == 2:
+                        break
+
+            move_stack = []
+            for key in keys:
+                if key == pygame.K_UP or key == pygame.K_w:
+                    move_stack.append(lambda: self.Move_up())
+                elif key == pygame.K_DOWN or key == pygame.K_s:
+                    move_stack.append(lambda: self.Move_down())
+                elif key == pygame.K_LEFT or key == pygame.K_a:
+                    move_stack.append(lambda: self.Move_left())
+                elif key == pygame.K_RIGHT or key == pygame.K_d:
+                    move_stack.append(lambda: self.Move_right())
+                elif key == pygame.K_b:
+                    Info.cheatsB = (Info.cheatsB) + 1 % 2
+                elif key == pygame.K_k:
+                    Info.cheatsK = (Info.cheatsK) + 1 % 2
+                elif key == pygame.K_m:
+                    Info.score += 100
+                elif key == pygame.K_ESCAPE:
+                    if self.pause:
+                        return 0
+                    self.pause = 1
+                    Info.d_x = 0
+                    Info.d_y = 0
+                elif key == pygame.K_p:
+                    if self.pause:
+                        save()
+
+            result_of_iteration = 0
+            skipped_sum = 0
+
+            while len(move_stack) != 0 and skipped_sum != len(move_stack):
+                skipped_sum = 0
+                for i in range(len(move_stack)):
+                    f = move_stack[i]
+                    res = f()
+                    if res:
+                        skipped_sum = 0
+                        del move_stack[i]
+                        self.pause = 0
+                        result_of_iteration = self.Execute_iteration()
+                        break
+                    else:
+                        skipped_sum += 1
+                    if skipped_sum == len(move_stack):
+                        break
+
+            result_of_iteration = self.Execute_iteration()
+            if result_of_iteration != -1:
+                return result_of_iteration
 
 
     def Move_up(self):
-        Info.d_x = -1
-        Info.d_y = 0
+        if Info.d_y != 0 or self.pause:
+            Info.d_x = -1
+            Info.d_y = 0
+            return 1
+        return 0
 
     def Move_down(self):
-        Info.d_x = 1
-        Info.d_y = 0
+        if Info.d_y != 0 or self.pause:
+            Info.d_x = 1
+            Info.d_y = 0
+            return 1
+        return 0
 
     def Move_left(self):
-        Info.d_x = 0
-        Info.d_y = -1
+        if Info.d_x != 0 or self.pause:
+            Info.d_x = 0
+            Info.d_y = -1
+            return 1
+        return 0
 
     def Move_right(self):
-        Info.d_x = 0
-        Info.d_y = 1
+        if Info.d_x != 0 or self.pause:
+            Info.d_x = 0
+            Info.d_y = 1
+            return 1
+        return 0
 
-    def Move(self):
-        if Info.d_x != 0 or Info.d_y != 0:
-            self.pause = 0
-
+    def Execute_iteration(self):
         self.draw_window()
         self.draw_text()
 
@@ -167,8 +195,6 @@ class Game:
                 if Info.apple.type == FoodType.lengthUp:
                     Sounds.eating_sound.play()
                     length_flag = 0
-                    if len(Info.snake_blocks) == Info.lvl_req:
-                        return 1
                 if Info.apple.type == FoodType.speedUp:
                     Sounds.drink_sound.play()
                     if not Info.cheatsK:
@@ -187,10 +213,13 @@ class Game:
                 if Info.iteration - Info.deathless_iteration > 5:
                     Sounds.hurt_sound.play()
                     Info.lives -= 1
-                    if Info.lives == 0:
-                        Sounds.death_sound.play()
-                        return 0
                     Info.deathless_iteration = Info.iteration
+
+            if Info.lives == 0:
+                Sounds.death_sound.play()
+                res = 0
+            if len(Info.snake_blocks) >= Info.lvl_req:
+                res = 1
 
             Info.snake_blocks.append(new_head)
             if length_flag or Info.cheatsK:
@@ -200,7 +229,14 @@ class Game:
             Info.iteration += 1
 
         pygame.display.flip()
-        self.timer.tick(1)
+        self.timer.tick(3 + Info.speed)
+        if Info.lives == 0:
+            Sounds.death_sound.play()
+            return 0
+        if len(Info.snake_blocks) >= Info.lvl_req:
+            Sounds.bonus_sound.play()
+            return 1
+        return -1
 
     def draw_window(self):
         '''

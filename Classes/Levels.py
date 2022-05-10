@@ -11,10 +11,23 @@ def start_level_1():
     if not Info.started_from_save:
         to_zero()
         Info.current_level = 1
-        Info.blocks_amount = 25
+        Info.blocks_amount = 10
         Info.snake_blocks = [Block(5, 5), Block(5, 6)]
         Info.walls = []
-        Info.lvl_req = 15
+        map = "0000000000"\
+              "0000000000"\
+              "0000000000"\
+              "0000000000"\
+              "0000000000"\
+              "0000000000"\
+              "0000000000"\
+              "0000000000"\
+              "0000000000"\
+              "0000000000"
+        for i in range(len(map)):
+            if map[i] == "1":
+                Info.walls.append(Block(i // Info.blocks_amount, i % Info.blocks_amount))
+        Info.lvl_req = 5
 
     game = Game()
 
@@ -28,26 +41,31 @@ def start_level_2():
         Info.current_level = 2
         Info.blocks_amount = 20
         Info.snake_blocks = [Block(9, 9), Block(9, 10)]
-        Info.walls = [Block(1, 1),
-                Block(1, 2),
-                Block(1, 3),
-                Block(2, 1),
-                Block(3, 1),
-                Block(18, 1),
-                Block(18, 2),
-                Block(18, 3),
-                Block(17, 1),
-                Block(16, 1),
-                Block(18, 18),
-                Block(18, 17),
-                Block(18, 16),
-                Block(17, 18),
-                Block(16, 18),
-                Block(1, 18),
-                Block(1, 17),
-                Block(1, 16),
-                Block(2, 18),
-                Block(3, 18)]
+        Info.walls = []
+        map = "10000000000000000000"\
+              "01000000000000000000"\
+              "00100000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00010000000000000000"\
+              "00000000000000000000"\
+              "00000000000000000000"
+        for i in range(len(map)):
+            if map[i] == "1":
+                Info.walls.append(Block(i // Info.blocks_amount, i % Info.blocks_amount))
+
         Info.lvl_req = 15
 
     game = Game()
@@ -62,46 +80,30 @@ def start_level_3():
         Info.current_level = 3
         Info.blocks_amount = 20
         Info.snake_blocks = [Block(9, 14), Block(9, 15)]
-        Info.walls = [Block(1, 1),
-                Block(1, 2),
-                Block(2, 1),
-                Block(18, 1),
-                Block(18, 2),
-                Block(17, 1),
-                Block(18, 18),
-                Block(18, 17),
-                Block(17, 18),
-                Block(1, 18),
-                Block(1, 17),
-                Block(2, 18),
-                Block(2, 2),
-                Block(3, 3),
-                Block(4, 4),
-                Block(5, 5),
-                Block(6, 6),
-                Block(7, 7),
-                Block(8, 8),
-                Block(11, 11),
-                Block(12, 12),
-                Block(13, 13),
-                Block(14, 14),
-                Block(15, 15),
-                Block(16, 16),
-                Block(17, 17),
-                Block(2, 17),
-                Block(3, 16),
-                Block(4, 15),
-                Block(5, 14),
-                Block(6, 13),
-                Block(7, 12),
-                Block(8, 11),
-                Block(11, 8),
-                Block(12, 7),
-                Block(13, 6),
-                Block(14, 5),
-                Block(15, 4),
-                Block(16, 3),
-                Block(17, 2)]
+        Info.walls = []
+        map = "00000000000000000000"\
+              "00000000000000000000"\
+              "00111110000001111100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00100000000000000100"\
+              "00111111111111111100"\
+              "00000000000000000000"\
+              "00000000000000000000"
+        for i in range(len(map)):
+            if map[i] == "1":
+                Info.walls.append(Block(i // Info.blocks_amount, i % Info.blocks_amount))
         Info.lvl_req = 15
 
     game = Game()
