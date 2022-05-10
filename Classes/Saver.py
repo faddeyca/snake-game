@@ -1,5 +1,5 @@
-from Classes.Game import *
 from Classes.Block import *
+from Classes.Food import *
 
 
 def save():

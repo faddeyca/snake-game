@@ -18,6 +18,12 @@ class Food:
         self.block = block
         self.type = type
 
+    def __eq__(self, other):
+        is_this_type = isinstance(other, Food)
+        if is_this_type:
+            return self.block == other.block and self.type == other.type
+        return False
+
 
 class FoodType(Enum):
     """
