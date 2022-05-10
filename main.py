@@ -16,20 +16,31 @@ def start():
         Path("sounds/music.mp3"))
     pygame.mixer.music.play()
     screen = build_menu()
+    levels = init_levels()
     menu = pygame_menu.Menu("Menu", 300, 200,
                             theme=pygame_menu.themes.THEME_BLUE)
-    menu.add.button('Play', start_game)
-    menu.add.button('Load', load_from_save)
+    menu.add.button('Play', lambda: start_game(levels))
+    menu.add.button('Load', lambda: load_from_save(levels))
     menu.add.button('Quit', pygame_menu.events.EXIT)
     menu.set_title("Snake")
     menu.mainloop(screen)
 
 
-def load_from_save():
-    Info.started_from_save = True
+def init_levels():
+    levels = []
+    levels.append(start_level_1)
+    levels.append(start_level_2)
+    levels.append(start_level_3)
+    return levels
+
+
+def load_from_save(levels):
     clean()
-    load_save()
-    start_game()
+    res = load_save()
+    if res == -1:
+        return
+    Info.started_from_save = True
+    start_game(levels)
 
 
 def clean():
@@ -37,7 +48,7 @@ def clean():
     Info.walls = []
 
 
-def start_game():
+def start_game(levels):
     '''
     Starts levels by their order. Ends if all levels are won or all lives are spent
     '''
@@ -45,21 +56,13 @@ def start_game():
         Info.score = 0
         Info.lives = 3
 
-    res = False
-    
-    if not Info.started_from_save or (Info.started_from_save and Info.current_level == 1):
-        res = start_level_1()
+    for level_index in range(len(levels)):
+        if Info.started_from_save and level_index < Info.current_level:
+            continue
+        res = levels[level_index]()
         Info.started_from_save = False
-
-    if res or (Info.started_from_save and Info.current_level == 2):
-        Sounds.bonus_sound.play()
-        res = start_level_2()
-        Info.started_from_save = False
-
-    if res or (Info.started_from_save and Info.current_level == 3):
-        Sounds.bonus_sound.play()
-        res = start_level_3()
-        Info.started_from_save = False
+        if not res:
+            break
 
     show_result()
     build_menu()

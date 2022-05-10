@@ -32,41 +32,44 @@ def save():
 
 
 def load_save():
-    f = open("save.txt", "r")
-    Info.current_level = int(f.readline())
-    Info.score = int(f.readline())
-    Info.lives = int(f.readline())
-    Info.blocks_amount = int(f.readline())
-    Info.lvl_req = int(f.readline())
-    Info.d_x = int(f.readline())
-    Info.d_y = int(f.readline())
-    Info.speed = int(f.readline())
-    Info.iteration = int(f.readline())
-    Info.fixed_iteration = int(f.readline())
-    Info.deathless_iteration = int(f.readline())
-    Info.bonus_flag = int(f.readline())
-    Info.cheatsB = int(f.readline())
-    Info.cheatsK = int(f.readline())
+    try:
+        f = open("save.txt", "r")
+        Info.current_level = int(f.readline())
+        Info.score = int(f.readline())
+        Info.lives = int(f.readline())
+        Info.blocks_amount = int(f.readline())
+        Info.lvl_req = int(f.readline())
+        Info.d_x = int(f.readline())
+        Info.d_y = int(f.readline())
+        Info.speed = int(f.readline())
+        Info.iteration = int(f.readline())
+        Info.fixed_iteration = int(f.readline())
+        Info.deathless_iteration = int(f.readline())
+        Info.bonus_flag = int(f.readline())
+        Info.cheatsB = int(f.readline())
+        Info.cheatsK = int(f.readline())
 
-    block = f.readline()
-    xy = block.split(',')
-    type = int_to_enum(int(f.readline()))
-    Info.apple = Food(Block(int(xy[0]), int(xy[1])), FoodType(type))
-
-    block = f.readline()
-    xy = block.split(',')
-    type = int_to_enum(int(f.readline()))
-    Info.bonus_food = Food(Block(int(xy[0]), int(xy[1])), FoodType(type))
-
-    snake_blocks = f.readline().split(';')
-    for block in snake_blocks:
-        if block == '\n':
-            continue
+        block = f.readline()
         xy = block.split(',')
-        Info.snake_blocks.append(Block(int(xy[0]), int(xy[1])))
-    walls = f.readline().split(';')
-    for block in walls:
-        if block == '\n' or len(block) <= 1:
-            continue
+        type = int_to_enum(int(f.readline()))
+        Info.apple = Food(Block(int(xy[0]), int(xy[1])), FoodType(type))
+
+        block = f.readline()
         xy = block.split(',')
-        Info.walls.append(Block(int(xy[0]), int(xy[1])))
+        type = int_to_enum(int(f.readline()))
+        Info.bonus_food = Food(Block(int(xy[0]), int(xy[1])), FoodType(type))
+
+        snake_blocks = f.readline().split(';')
+        for block in snake_blocks:
+            if block == '\n':
+                continue
+            xy = block.split(',')
+            Info.snake_blocks.append(Block(int(xy[0]), int(xy[1])))
+        walls = f.readline().split(';')
+        for block in walls:
+            if block == '\n' or len(block) <= 1:
+                continue
+            xy = block.split(',')
+            Info.walls.append(Block(int(xy[0]), int(xy[1])))
+    except:
+        return -1
