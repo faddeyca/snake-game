@@ -22,3 +22,4 @@ class Info:
     bonus_food = None
 
     started_from_save = False
+    pause = 1

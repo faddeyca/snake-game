@@ -59,50 +59,18 @@ class Game:
         '''
         Starts the level
         '''
-        self.far_block = Block(-100, -100)
 
         if not Info.started_from_save:
             Info.apple = Food(self.get_random_block(), FoodType.lengthUp)
-            Info.bonus_food = Food(self.far_block, FoodType.scoreUp)
+            Info.bonus_food = Food(Block(-100, -100), FoodType.scoreUp)
 
-        self.pause = 1
+        Info.pause = 1
 
         while 1:
-            keys = []
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if event.type == pygame.KEYDOWN:
-                    keys.append(event.key)
-                    if len(keys) == 2:
-                        break
+            move_stack = self.read_input()
 
-            move_stack = []
-            for key in keys:
-                if key == pygame.K_UP or key == pygame.K_w:
-                    move_stack.append(lambda: self.Move_up())
-                elif key == pygame.K_DOWN or key == pygame.K_s:
-                    move_stack.append(lambda: self.Move_down())
-                elif key == pygame.K_LEFT or key == pygame.K_a:
-                    move_stack.append(lambda: self.Move_left())
-                elif key == pygame.K_RIGHT or key == pygame.K_d:
-                    move_stack.append(lambda: self.Move_right())
-                elif key == pygame.K_b:
-                    Info.cheatsB = (Info.cheatsB) + 1 % 2
-                elif key == pygame.K_k:
-                    Info.cheatsK = (Info.cheatsK) + 1 % 2
-                elif key == pygame.K_m:
-                    Info.score += 100
-                elif key == pygame.K_ESCAPE:
-                    if self.pause:
-                        return 0
-                    self.pause = 1
-                    Info.d_x = 0
-                    Info.d_y = 0
-                elif key == pygame.K_p:
-                    if self.pause:
-                        save()
+            if move_stack == 0:
+                return 0
 
             result_of_iteration = 0
             skipped_sum = 0
@@ -115,7 +83,7 @@ class Game:
                     if res:
                         skipped_sum = 0
                         del move_stack[i]
-                        self.pause = 0
+                        Info.pause = 0
                         result_of_iteration = self.Execute_iteration()
                         break
                     else:
@@ -127,30 +95,67 @@ class Game:
             if result_of_iteration != -1:
                 return result_of_iteration
 
+    def read_input(self):
+        keys = []
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                keys.append(event.key)
+                if len(keys) == 2:
+                    break
+
+        move_stack = []
+        for key in keys:
+            if key == pygame.K_UP or key == pygame.K_w:
+                move_stack.append(lambda: self.Move_up())
+            elif key == pygame.K_DOWN or key == pygame.K_s:
+                move_stack.append(lambda: self.Move_down())
+            elif key == pygame.K_LEFT or key == pygame.K_a:
+                move_stack.append(lambda: self.Move_left())
+            elif key == pygame.K_RIGHT or key == pygame.K_d:
+                move_stack.append(lambda: self.Move_right())
+            elif key == pygame.K_b:
+                Info.cheatsB = (Info.cheatsB + 1) % 2
+            elif key == pygame.K_k:
+                Info.cheatsK = (Info.cheatsK + 1) % 2
+            elif key == pygame.K_m:
+                Info.score += 100
+            elif key == pygame.K_ESCAPE:
+                if Info.pause:
+                    return 0
+                Info.pause = 1
+                Info.d_x = 0
+                Info.d_y = 0
+            elif key == pygame.K_p:
+                if Info.pause:
+                    save()
+        return move_stack
 
     def Move_up(self):
-        if Info.d_y != 0 or self.pause:
+        if Info.d_y != 0 or Info.pause:
             Info.d_x = -1
             Info.d_y = 0
             return 1
         return 0
 
     def Move_down(self):
-        if Info.d_y != 0 or self.pause:
+        if Info.d_y != 0 or Info.pause:
             Info.d_x = 1
             Info.d_y = 0
             return 1
         return 0
 
     def Move_left(self):
-        if Info.d_x != 0 or self.pause:
+        if Info.d_x != 0 or Info.pause:
             Info.d_x = 0
             Info.d_y = -1
             return 1
         return 0
 
     def Move_right(self):
-        if Info.d_x != 0 or self.pause:
+        if Info.d_x != 0 or Info.pause:
             Info.d_x = 0
             Info.d_y = 1
             return 1
@@ -165,55 +170,19 @@ class Game:
 
         self.draw_env()
 
-        if not self.pause:
-            if Info.speed % 2 == 0:
-                if not Info.bonus_flag:
-                    Info.bonus_flag = 1
-                    Info.fixed_iteration = Info.iteration
-                    Info.bonus_food = Food(self.get_random_block(), FoodType.scoreUp)
-            else:
-                Info.bonus_flag = 0
-
-            if Info.bonus_flag:
-                if Info.iteration - Info.fixed_iteration >= 20:
-                    Info.bonus_food = Food(self.far_block, FoodType.scoreUp)
-                if Info.bonus_food.block == head:
-                    Sounds.bonus_sound.play()
-                    Info.score += 10
-                    Info.bonus_food = Food(self.far_block, FoodType.scoreUp)
-                else:
-                    if Info.iteration % 2 == 0:
-                        self.draw_block(Color.yellow,
-                                    Info.bonus_food.block.x, Info.bonus_food.block.y)
-                    else:
-                        self.draw_block(Color.green,
-                                    Info.bonus_food.block.x, Info.bonus_food.block.y)
+        if not Info.pause:
+            self.generate_bonus_food(head)
 
             length_flag = 1
             if Info.apple.block == head:
-                Info.score += 1
-                if Info.apple.type == FoodType.lengthUp:
-                    Sounds.eating_sound.play()
-                    length_flag = 0
-                if Info.apple.type == FoodType.speedUp:
-                    Sounds.drink_sound.play()
-                    if not Info.cheatsK:
-                        Info.speed += 1
-                if Info.score % 5 == 0:
-                    Info.apple = Food(self.get_random_block(), FoodType.speedUp)
-                else:
-                    Info.apple = Food(self.get_random_block(),
-                                    FoodType.lengthUp)
+                length_flag = self.eat_food()
             else:
                 length_flag = 1
 
             new_head = Block(head.x + Info.d_x, head.y + Info.d_y)
 
             if (not Info.cheatsB) and (new_head in Info.snake_blocks or new_head in Info.walls):
-                if Info.iteration - Info.deathless_iteration > 5:
-                    Sounds.hurt_sound.play()
-                    Info.lives -= 1
-                    Info.deathless_iteration = Info.iteration
+                self.get_damage()
 
             Info.snake_blocks.append(new_head)
             if length_flag or Info.cheatsK:
@@ -222,6 +191,32 @@ class Game:
                 Info.lvl_req -= 1
             Info.iteration += 1
 
+        return self.end_iteration_processing()
+
+    def get_damage(self):
+        if Info.iteration - Info.deathless_iteration > 5:
+            Sounds.hurt_sound.play()
+            Info.lives -= 1
+            Info.deathless_iteration = Info.iteration
+
+    def eat_food(self):
+        length_flag = 1
+        Info.score += 1
+        if Info.apple.type == FoodType.lengthUp:
+            Sounds.eating_sound.play()
+            length_flag = 0
+        elif Info.apple.type == FoodType.speedUp:
+            Sounds.drink_sound.play()
+            if not Info.cheatsK:
+                Info.speed += 1
+        if Info.score % 5 == 0:
+            Info.apple = Food(self.get_random_block(), FoodType.speedUp)
+        else:
+            Info.apple = Food(self.get_random_block(),
+                                    FoodType.lengthUp)
+        return length_flag
+
+    def end_iteration_processing(self):
         pygame.display.flip()
         self.timer.tick(3 + Info.speed)
         if Info.lives == 0:
@@ -232,32 +227,35 @@ class Game:
             return 1
         return -1
 
-    def draw_window(self):
-        '''
-        Draws window
-        '''
-        self.screen.fill(Color.black)
-        pygame.draw.rect(self.screen, Color.up_menu,
-                         [0, 0, self.size[0], Prop.up_length])
+    def generate_bonus_food(self, head):
+        self.create_bonus_food()
 
-    def draw_block(self, color, row, column):
-        '''
-        Draws a block withs specific parameters.
+        if Info.bonus_flag:
+            self.bonus_food_processing(head)
 
-            Parameters:
-                    color (Color): A color of the block
-                    row (int): Position in row
-                    column (int): Position in column
-        '''
-        pygame.draw.rect(self.screen, color, [Prop.block_size +
-                                              column * Prop.block_size +
-                                              Prop.delta * (column + 1),
-                                              Prop.up_length +
-                                              Prop.block_size +
-                                              row * Prop.block_size +
-                                              Prop.delta * (row + 1),
-                                              Prop.block_size,
-                                              Prop.block_size])
+    def bonus_food_processing(self, head):
+        if Info.iteration - Info.fixed_iteration >= 20:
+            Info.bonus_food = Food(Block(-100, -100), FoodType.scoreUp)
+        if Info.bonus_food.block == head:
+            Sounds.bonus_sound.play()
+            Info.score += 10
+            Info.bonus_food = Food(Block(-100, -100), FoodType.scoreUp)
+        else:
+            if Info.iteration % 2 == 0:
+                self.draw_block(Color.yellow,
+                                    Info.bonus_food.block.x, Info.bonus_food.block.y)
+            else:
+                self.draw_block(Color.green,
+                                    Info.bonus_food.block.x, Info.bonus_food.block.y)
+
+    def create_bonus_food(self):
+        if Info.speed % 2 == 0:
+            if not Info.bonus_flag:
+                Info.bonus_flag = 1
+                Info.fixed_iteration = Info.iteration
+                Info.bonus_food = Food(self.get_random_block(), FoodType.scoreUp)
+        else:
+            Info.bonus_flag = 0
 
     def get_random_block(self):
         '''
@@ -274,6 +272,14 @@ class Game:
             y = random.randint(0, Info.blocks_amount - 1)
             empty_block = Block(x, y)
         return empty_block
+
+    def draw_window(self):
+        '''
+        Draws window
+        '''
+        self.screen.fill(Color.black)
+        pygame.draw.rect(self.screen, Color.up_menu,
+                         [0, 0, self.size[0], Prop.up_length])
 
     def draw_env(self):
         '''
@@ -297,6 +303,25 @@ class Game:
 
         self.draw_block(Color.snake_head,
                         Info.snake_blocks[-1].x, Info.snake_blocks[-1].y)
+
+    def draw_block(self, color, row, column):
+        '''
+        Draws a block withs specific parameters.
+
+            Parameters:
+                    color (Color): A color of the block
+                    row (int): Position in row
+                    column (int): Position in column
+        '''
+        pygame.draw.rect(self.screen, color, [Prop.block_size +
+                                              column * Prop.block_size +
+                                              Prop.delta * (column + 1),
+                                              Prop.up_length +
+                                              Prop.block_size +
+                                              row * Prop.block_size +
+                                              Prop.delta * (row + 1),
+                                              Prop.block_size,
+                                              Prop.block_size])
 
     def draw_text(self):
         '''
