@@ -3,6 +3,9 @@ from Classes.Food import *
 
 
 def save():
+    '''
+    Writes everything from Info to file
+    '''
     f = open("save.txt", "w")
     f.write(str(Info.current_level) + "\n")
     f.write(str(Info.score) + "\n")
@@ -13,7 +16,7 @@ def save():
     f.write(str(Info.d_y) + "\n")
     f.write(str(Info.speed) + "\n")
     f.write(str(Info.iteration) + "\n")
-    f.write(str(Info.fixed_iteration) + "\n")
+    f.write(str(Info.bonus_food_iteration) + "\n")
     f.write(str(Info.deathless_iteration) + "\n")
     f.write(str(Info.bonus_flag) + "\n")
     f.write(str(Info.cheatsB) + "\n")
@@ -32,6 +35,9 @@ def save():
 
 
 def load_save():
+    '''
+    Reads file and writes Info
+    '''
     try:
         f = open("save.txt", "r")
         Info.current_level = int(f.readline())
@@ -43,7 +49,7 @@ def load_save():
         Info.d_y = int(f.readline())
         Info.speed = int(f.readline())
         Info.iteration = int(f.readline())
-        Info.fixed_iteration = int(f.readline())
+        Info.bonus_food_iteration = int(f.readline())
         Info.deathless_iteration = int(f.readline())
         Info.bonus_flag = int(f.readline())
         Info.cheatsB = int(f.readline())

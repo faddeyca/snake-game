@@ -4,6 +4,23 @@ from Classes.Level_Info import Info
 
 
 class Level():
+    """
+    A class to represent a level
+
+    ...
+
+    Attributes
+    ----------
+    Same to Info
+    
+
+    Methods
+    -------
+    start():
+        Sets level properties and init game
+    clean():
+        Drops old properties
+    """
     def __init__(self, current_level, blocks_amount, snake_blocks, lvl_req, map):
         self.current_level = current_level
         self.blocks_amount = blocks_amount
@@ -16,8 +33,11 @@ class Level():
     
 
     def start(self):
+        '''
+        Sets level properties and init game
+        '''
         if not Info.started_from_save:
-            self.to_zero()
+            self.clean()
             Info.current_level = self.current_level
             Info.blocks_amount = self.blocks_amount
             Info.snake_blocks = self.snake_blocks.copy()
@@ -26,7 +46,10 @@ class Level():
         game = Game()
         return game.start()
 
-    def to_zero(self):
+    def clean(self):
+        '''
+        Drops old properties
+        '''
         Info.bonus_flag = 0
         Info.cheatsB = 0
         Info.cheatsK = 0
@@ -34,13 +57,13 @@ class Level():
         Info.d_y = 0
         Info.speed = 1
         Info.iteration = 0
-        Info.fixed_iteration = 0
+        Info.bonus_food_iteration = 0
         Info.deathless_iteration = 0
 
 
 def init_level_1():
     '''
-    Starts the level with specific parameters: Amount of blocks in row and columns, snake coords, walls coords, win level requirment.
+    Starts the level with specific parameters.
     All further functions in this files do the same.
     '''
     current_level = 1

@@ -64,7 +64,7 @@ def test_saver():
     current_level = 1
     score = 2
     lives = 3
-    blocks_amount = 4
+    blocks_amount = 25
     lvl_req = 5
     d_x = 1
     d_y = -1
@@ -89,7 +89,7 @@ def test_saver():
     Info.d_y = d_y
     Info.speed = speed
     Info.iteration = iteration
-    Info.fixed_iteration = fixed_iteration
+    Info.bonus_food_iteration = fixed_iteration
     Info.deathless_iteration = deathless_iteration
     Info.bonus_flag = bonus_flag
     Info.cheatsB = cheatsB
@@ -112,7 +112,7 @@ def test_saver():
     assert Info.d_y == d_y
     assert Info.speed == speed
     assert Info.iteration == iteration
-    assert Info.fixed_iteration == fixed_iteration
+    assert Info.bonus_food_iteration == fixed_iteration
     assert Info.deathless_iteration == deathless_iteration
     assert Info.bonus_flag == bonus_flag
     assert Info.cheatsB == cheatsB
@@ -162,3 +162,89 @@ def test_level_init():
 
     assert check
 
+
+from Classes.Game import *
+
+def test_init_game():
+    Info.blocks_amount = 10
+    game = Game()
+    assert game.size[0] == 310 and game.size[1] == 410
+
+def test_move_up():
+    Info.pause = 1
+    game = Game()
+    game.Move_up()
+    assert Info.d_x == -1 and Info.d_y == 0
+
+def test_move_down():
+    Info.pause = 1
+    game = Game()
+    game.Move_down()
+    assert Info.d_x == 1 and Info.d_y == 0
+
+def test_move_right():
+    Info.pause = 1
+    game = Game()
+    game.Move_right()
+    assert Info.d_x == 0 and Info.d_y == 1
+
+def test_move_left():
+    Info.pause = 1
+    game = Game()
+    game.Move_left()
+    assert Info.d_x == 0 and Info.d_y == -1
+
+def test_start():
+    Info.lvl_req = -1
+    game = Game()
+    res = game.start()
+    assert res == 1
+
+def test_execute_iteration_win():
+    Info.lvl_req = -1
+    game = Game()
+    res = game.Execute_iteration()
+    assert res == 1
+
+def test_execute_iteration_defeat():
+    Info.lives = 0
+    game = Game()
+    res = game.Execute_iteration()
+    assert res == 0
+
+def test_execute_iteration_defeat():
+    Info.lives = 3
+    Info.lvl_req = 10
+    game = Game()
+    res = game.Execute_iteration()
+    assert res == -1
+
+def test_get_damage():
+    Info.iteration = 10
+    Info.deathless_iteration = 0
+    Info.lives = 1
+    game = Game()
+    game.get_damage()
+    assert Info.lives == 0
+
+def test_not_get_damage():
+    Info.iteration = 3
+    Info.deathless_iteration = 0
+    Info.lives = 1
+    game = Game()
+    game.get_damage()
+    assert Info.lives == 1
+
+def test_eat_food_lengthUp():
+    Info.score = 0
+    Info.apple = Food(Block(0, 0), FoodType.lengthUp)
+    game = Game()
+    flag = game.eat_food()
+    assert flag == 0
+    assert Info.score == 1
+
+def test_end_iteration_processing():
+    Info.lvl_req = -1
+    game = Game()
+    res = game.end_iteration_processing()
+    assert res == 1

@@ -4,7 +4,7 @@ import random
 
 from Classes.Block import *
 from Classes.Food import *
-from Classes.Propirties import *
+from Classes.Properties import *
 from Classes.Colors import *
 from Classes.Sounds import *
 from Classes.Level_Info import Info
@@ -13,7 +13,7 @@ from Classes.Saver import save
 
 class Game:
     """
-    A class to represent a level.
+    A class to represent the game.
 
     ...
 
@@ -23,19 +23,6 @@ class Game:
         Current pygame screen size
     screen : pygame.display
         Current screen
-
-    d_x : int
-        Snake's direction in row
-    d_y : int
-        Snake's direction in column
-    speed : int
-        Current snake's speed
-    snake_blocks : Blocks array
-        Snake's body and head array: (0) - tail, (-1) - head
-    walls : Blocks array
-        Walls positions
-    lvl_req : int
-        Required length of the snake to win this level
     timer : pygame.time.Clock
         Timer for iterations check
     
@@ -46,6 +33,9 @@ class Game:
         Puts the block in field's boundary.
     """
     def __init__(self):
+        '''
+        Initializes the level
+        '''
         self.size = [Prop.block_size * Info.blocks_amount +
                      2 * Prop.block_size + Prop.delta * Info.blocks_amount,
                      Prop.block_size * Info.blocks_amount +
@@ -59,7 +49,6 @@ class Game:
         '''
         Starts the level
         '''
-
         if not Info.started_from_save:
             Info.apple = Food(self.get_random_block(), FoodType.lengthUp)
             Info.bonus_food = Food(Block(-100, -100), FoodType.scoreUp)
@@ -96,6 +85,9 @@ class Game:
                 return result_of_iteration
 
     def read_input(self):
+        '''
+        Reads keyboard input
+        '''
         keys = []
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -134,6 +126,9 @@ class Game:
         return move_stack
 
     def Move_up(self):
+        '''
+        If possible, changes snake direction to up
+        '''
         if Info.d_y != 0 or Info.pause:
             Info.d_x = -1
             Info.d_y = 0
@@ -141,6 +136,9 @@ class Game:
         return 0
 
     def Move_down(self):
+        '''
+        If possible, changes snake direction to down
+        '''
         if Info.d_y != 0 or Info.pause:
             Info.d_x = 1
             Info.d_y = 0
@@ -148,6 +146,9 @@ class Game:
         return 0
 
     def Move_left(self):
+        '''
+        If possible, changes snake to left
+        '''
         if Info.d_x != 0 or Info.pause:
             Info.d_x = 0
             Info.d_y = -1
@@ -155,6 +156,9 @@ class Game:
         return 0
 
     def Move_right(self):
+        '''
+        If possible, changes snake to right
+        '''
         if Info.d_x != 0 or Info.pause:
             Info.d_x = 0
             Info.d_y = 1
@@ -162,6 +166,9 @@ class Game:
         return 0
 
     def Execute_iteration(self):
+        '''
+        Processing one iteration with drawnings and movings
+        '''
         self.draw_window()
         self.draw_text()
 
@@ -194,12 +201,18 @@ class Game:
         return self.end_iteration_processing()
 
     def get_damage(self):
+        '''
+        Snake damage processing
+        '''
         if Info.iteration - Info.deathless_iteration > 5:
             Sounds.hurt_sound.play()
             Info.lives -= 1
             Info.deathless_iteration = Info.iteration
 
     def eat_food(self):
+        '''
+        Food eating processing
+        '''
         length_flag = 1
         Info.score += 1
         if Info.apple.type == FoodType.lengthUp:
@@ -217,6 +230,9 @@ class Game:
         return length_flag
 
     def end_iteration_processing(self):
+        '''
+        Iteration end processing
+        '''
         pygame.display.flip()
         self.timer.tick(3 + Info.speed)
         if Info.lives == 0:
@@ -228,13 +244,16 @@ class Game:
         return -1
 
     def generate_bonus_food(self, head):
+        '''
+        Generates bonus food
+        '''
         self.create_bonus_food()
 
         if Info.bonus_flag:
             self.bonus_food_processing(head)
 
     def bonus_food_processing(self, head):
-        if Info.iteration - Info.fixed_iteration >= 20:
+        if Info.iteration - Info.bonus_food_iteration >= 20:
             Info.bonus_food = Food(Block(-100, -100), FoodType.scoreUp)
         if Info.bonus_food.block == head:
             Sounds.bonus_sound.play()
@@ -252,7 +271,7 @@ class Game:
         if Info.speed % 2 == 0:
             if not Info.bonus_flag:
                 Info.bonus_flag = 1
-                Info.fixed_iteration = Info.iteration
+                Info.bonus_food_iteration = Info.iteration
                 Info.bonus_food = Food(self.get_random_block(), FoodType.scoreUp)
         else:
             Info.bonus_flag = 0

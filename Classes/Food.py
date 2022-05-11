@@ -3,7 +3,7 @@ from enum import Enum
 
 class Food:
     """
-    A class to represent a food.
+    A class to represent a food
 
     ...
 
@@ -15,10 +15,16 @@ class Food:
         Type
     """
     def __init__(self, block, type):
+        '''
+        Initializes food
+        '''
         self.block = block
         self.type = type
 
     def __eq__(self, other):
+        '''
+        Compares food
+        '''
         is_this_type = isinstance(other, Food)
         if is_this_type:
             return self.block == other.block and self.type == other.type
@@ -27,7 +33,7 @@ class Food:
 
 class FoodType(Enum):
     """
-    A class to represent a food type.
+    A class to represent a food type
     """
     #  Increase the length of the snake
     lengthUp = 0
@@ -38,6 +44,9 @@ class FoodType(Enum):
 
 
 def enum_to_int(food):
+    '''
+    Converts enum to int
+    '''
     if food == FoodType.lengthUp:
         return 0
     if food == FoodType.speedUp:
@@ -47,6 +56,9 @@ def enum_to_int(food):
 
 
 def int_to_enum(i):
+    '''
+    Converts int to enum
+    '''
     if i == 0:
         return FoodType.lengthUp
     if i == 1:

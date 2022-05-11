@@ -5,6 +5,9 @@ pygame.init()
 
 
 class Sounds():
+    """
+    A class to represent and load sounds
+    """
     eating_sound = pygame.mixer.Sound(Path("sounds/food.mp3"))
     hurt_sound = pygame.mixer.Sound(Path("sounds/hurt.mp3"))
     bonus_sound = pygame.mixer.Sound(Path("sounds/bonus.mp3"))

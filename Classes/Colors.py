@@ -1,6 +1,6 @@
 class Color:
     """
-    A class to represent a color in RGB terms.
+    A class to represent a color in RGB terms
     """
     #  Light blue
     up_menu = (0, 177, 205)
