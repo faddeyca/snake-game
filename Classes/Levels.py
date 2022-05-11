@@ -12,7 +12,7 @@ class Level():
     Attributes
     ----------
     Same to Info
-    
+
 
     Methods
     -------
@@ -21,7 +21,8 @@ class Level():
     clean():
         Drops old properties
     """
-    def __init__(self, current_level, blocks_amount, snake_blocks, lvl_req, map):
+    def __init__(self, current_level, blocks_amount,
+                 snake_blocks, lvl_req, map):
         self.current_level = current_level
         self.blocks_amount = blocks_amount
         self.snake_blocks = snake_blocks
@@ -29,8 +30,8 @@ class Level():
         self.walls = []
         for i in range(len(map)):
             if map[i] == "1":
-                self.walls.append(Block(i // self.blocks_amount, i % self.blocks_amount))
-    
+                self.walls.append(Block(i // self.blocks_amount,
+                                        i % self.blocks_amount))
 
     def start(self):
         '''
@@ -80,7 +81,7 @@ def init_level_1():
           "0000000000"\
           "0000000000"\
           "0000000000"
-    
+
     return Level(current_level, blocks_amount, snake_blocks, lvl_req, map)
 
 

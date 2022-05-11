@@ -25,7 +25,7 @@ class Game:
         Current screen
     timer : pygame.time.Clock
         Timer for iterations check
-    
+
 
     Methods
     -------
@@ -188,8 +188,9 @@ class Game:
 
             new_head = Block(head.x + Info.d_x, head.y + Info.d_y)
 
-            if (not Info.cheatsB) and (new_head in Info.snake_blocks or new_head in Info.walls):
-                self.get_damage()
+            if not Info.cheatsB:
+                if new_head in Info.snake_blocks or new_head in Info.walls:
+                    self.get_damage()
 
             Info.snake_blocks.append(new_head)
             if length_flag or Info.cheatsK:
@@ -226,7 +227,7 @@ class Game:
             Info.apple = Food(self.get_random_block(), FoodType.speedUp)
         else:
             Info.apple = Food(self.get_random_block(),
-                                    FoodType.lengthUp)
+                              FoodType.lengthUp)
         return length_flag
 
     def end_iteration_processing(self):
@@ -262,17 +263,20 @@ class Game:
         else:
             if Info.iteration % 2 == 0:
                 self.draw_block(Color.yellow,
-                                    Info.bonus_food.block.x, Info.bonus_food.block.y)
+                                Info.bonus_food.block.x,
+                                Info.bonus_food.block.y)
             else:
                 self.draw_block(Color.green,
-                                    Info.bonus_food.block.x, Info.bonus_food.block.y)
+                                Info.bonus_food.block.x,
+                                Info.bonus_food.block.y)
 
     def create_bonus_food(self):
         if Info.speed % 2 == 0:
             if not Info.bonus_flag:
                 Info.bonus_flag = 1
                 Info.bonus_food_iteration = Info.iteration
-                Info.bonus_food = Food(self.get_random_block(), FoodType.scoreUp)
+                Info.bonus_food = Food(self.get_random_block(),
+                                       FoodType.scoreUp)
         else:
             Info.bonus_flag = 0
 
@@ -344,7 +348,8 @@ class Game:
 
     def draw_text(self):
         '''
-        Draws text in up menu: score, curreent speed, lives left, Info.apples to eat left
+        Draws text in up menu:
+        score, curreent speed, lives left, Info.apples to eat left
         '''
         k = Info.blocks_amount / 20
         courier = pygame.font.SysFont('courier', int(25 * k))

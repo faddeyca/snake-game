@@ -13,11 +13,6 @@ class Block:
         position in row
     y : int
         position in column
-
-    Methods
-    -------
-    put_in_boundary():
-        Puts the block in field's boundary
     """
     def __init__(self, x, y):
         '''

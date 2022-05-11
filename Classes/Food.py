@@ -12,7 +12,7 @@ class Food:
     block : Block
         Food as block(position)
     type : FoodType
-        Type
+        Type of food
     """
     def __init__(self, block, type):
         '''

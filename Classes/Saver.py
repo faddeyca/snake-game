@@ -29,7 +29,7 @@ def save():
 
     for block in Info.snake_blocks:
         f.write(f"{block.x},{block.y};")
-    f.write("\n")   
+    f.write("\n")
     for block in Info.walls:
         f.write(f"{block.x},{block.y};")
 

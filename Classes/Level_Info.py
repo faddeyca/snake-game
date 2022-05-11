@@ -27,7 +27,9 @@ class Info:
     speed : int
         Current snake's speed
     iteration : int
-        Current iteration number - times "execute_iteration" called - number of current frame
+        Current iteration number
+        times "execute_iteration" called
+        number of current frame
     bonus_food_iteration : int
         Fixed number of iteration when bonus food was created
     deathless_iteration : int
