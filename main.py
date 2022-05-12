@@ -94,7 +94,7 @@ def show_result():
         courier = pygame.font.SysFont('courier', 25)
         text_score = courier.render(f"Result: {Info.score}", 0, Color.white)
         text_continue = courier.render("Press any key to continue",
-                                        0, Color.white)
+                                       0, Color.white)
         screen.blit(text_score, (10, 10))
         screen.blit(text_continue, (10, 40))
         pygame.display.flip()

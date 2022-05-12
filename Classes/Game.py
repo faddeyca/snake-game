@@ -63,7 +63,10 @@ class Game:
 
             result_of_iteration = 0
             skipped_sum = 0
-
+            if len(move_stack) == 1:
+                f = move_stack.pop()
+                f()
+                Info.pause = 0
             while len(move_stack) != 0 and skipped_sum != len(move_stack):
                 skipped_sum = 0
                 for i in range(len(move_stack)):

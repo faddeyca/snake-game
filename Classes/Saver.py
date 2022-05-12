@@ -77,5 +77,5 @@ def load_save():
                 continue
             xy = block.split(',')
             Info.walls.append(Block(int(xy[0]), int(xy[1])))
-    except:
+    except FileNotFoundError:
         return -1
