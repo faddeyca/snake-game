@@ -48,14 +48,14 @@ def read_input():
 
 
 def Move_up():
-        '''
-        If possible, changes snake direction to up
-        '''
-        if Info.d_y != 0 or Info.pause:
-            Info.d_x = -1
-            Info.d_y = 0
-            return 1
-        return 0
+    '''
+    If possible, changes snake direction to up
+    '''
+    if Info.d_y != 0 or Info.pause:
+        Info.d_x = -1
+        Info.d_y = 0
+        return 1
+    return 0
 
 
 def Move_down():

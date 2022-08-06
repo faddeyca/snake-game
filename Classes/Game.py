@@ -89,7 +89,6 @@ class Game:
             if result_of_iteration != -1:
                 return result_of_iteration
 
-
     def Execute_iteration(self, double=False):
         '''
         Processing one iteration with drawnings and movings
