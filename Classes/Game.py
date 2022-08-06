@@ -1,5 +1,4 @@
 import pygame
-import sys
 import random
 
 from Classes.Block import *
@@ -8,7 +7,7 @@ from Classes.Properties import *
 from Classes.Colors import *
 from Classes.Sounds import *
 from Classes.Level_Info import Info
-from Classes.Saver import save
+import Classes.MotionHandler as mh
 
 
 class Game:
@@ -56,13 +55,14 @@ class Game:
         Info.pause = 1
 
         while 1:
-            move_stack = self.read_input()
+            move_stack = mh.read_input()
 
             if move_stack == 0:
                 return 0
 
             result_of_iteration = 0
             skipped_sum = 0
+            flag = True
             if len(move_stack) == 1:
                 f = move_stack.pop()
                 f()
@@ -76,6 +76,7 @@ class Game:
                         skipped_sum = 0
                         del move_stack[i]
                         Info.pause = 0
+                        flag = False
                         result_of_iteration = self.Execute_iteration()
                         break
                     else:
@@ -83,92 +84,13 @@ class Game:
                     if skipped_sum == len(move_stack):
                         break
 
-            result_of_iteration = self.Execute_iteration()
+            if flag:
+                result_of_iteration = self.Execute_iteration()
             if result_of_iteration != -1:
                 return result_of_iteration
 
-    def read_input(self):
-        '''
-        Reads keyboard input
-        '''
-        keys = []
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                keys.append(event.key)
-                if len(keys) == 2:
-                    break
 
-        move_stack = []
-        for key in keys:
-            if key == pygame.K_UP or key == pygame.K_w:
-                move_stack.append(lambda: self.Move_up())
-            elif key == pygame.K_DOWN or key == pygame.K_s:
-                move_stack.append(lambda: self.Move_down())
-            elif key == pygame.K_LEFT or key == pygame.K_a:
-                move_stack.append(lambda: self.Move_left())
-            elif key == pygame.K_RIGHT or key == pygame.K_d:
-                move_stack.append(lambda: self.Move_right())
-            elif key == pygame.K_b:
-                Info.cheatsB = (Info.cheatsB + 1) % 2
-            elif key == pygame.K_k:
-                Info.cheatsK = (Info.cheatsK + 1) % 2
-            elif key == pygame.K_m:
-                Info.score += 100
-            elif key == pygame.K_ESCAPE:
-                if Info.pause:
-                    return 0
-                Info.pause = 1
-                Info.d_x = 0
-                Info.d_y = 0
-            elif key == pygame.K_p:
-                if Info.pause:
-                    save()
-        return move_stack
-
-    def Move_up(self):
-        '''
-        If possible, changes snake direction to up
-        '''
-        if Info.d_y != 0 or Info.pause:
-            Info.d_x = -1
-            Info.d_y = 0
-            return 1
-        return 0
-
-    def Move_down(self):
-        '''
-        If possible, changes snake direction to down
-        '''
-        if Info.d_y != 0 or Info.pause:
-            Info.d_x = 1
-            Info.d_y = 0
-            return 1
-        return 0
-
-    def Move_left(self):
-        '''
-        If possible, changes snake to left
-        '''
-        if Info.d_x != 0 or Info.pause:
-            Info.d_x = 0
-            Info.d_y = -1
-            return 1
-        return 0
-
-    def Move_right(self):
-        '''
-        If possible, changes snake to right
-        '''
-        if Info.d_x != 0 or Info.pause:
-            Info.d_x = 0
-            Info.d_y = 1
-            return 1
-        return 0
-
-    def Execute_iteration(self):
+    def Execute_iteration(self, double=False):
         '''
         Processing one iteration with drawnings and movings
         '''
@@ -202,7 +124,7 @@ class Game:
                 Info.lvl_req -= 1
             Info.iteration += 1
 
-        return self.end_iteration_processing()
+        return self.end_iteration_processing(double)
 
     def get_damage(self):
         '''
@@ -233,12 +155,15 @@ class Game:
                               FoodType.lengthUp)
         return length_flag
 
-    def end_iteration_processing(self):
+    def end_iteration_processing(self, double):
         '''
         Iteration end processing
         '''
         pygame.display.flip()
-        self.timer.tick(3 + Info.speed)
+        if not double:
+            self.timer.tick(3 + Info.speed)
+        else:
+            self.timer.tick(1 + Info.speed)
         if Info.lives == 0:
             Sounds.death_sound.play()
             return 0

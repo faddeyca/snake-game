@@ -1,5 +1,6 @@
 import pygame
 import pygame_menu
+import sys
 from pathlib import Path
 
 from Classes.Levels import *
