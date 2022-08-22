@@ -55,6 +55,7 @@ class Game:
         Info.pause = 1
 
         while 1:
+            self.timer.tick(3 + Info.speed)
             move_stack = mh.read_input()
 
             if move_stack == 0:
@@ -89,7 +90,7 @@ class Game:
             if result_of_iteration != -1:
                 return result_of_iteration
 
-    def Execute_iteration(self, double=False):
+    def Execute_iteration(self):
         '''
         Processing one iteration with drawnings and movings
         '''
@@ -100,6 +101,7 @@ class Game:
         head.put_in_boundary()
 
         self.draw_env()
+        pygame.display.flip()
 
         if not Info.pause:
             self.generate_bonus_food(head)
@@ -123,7 +125,13 @@ class Game:
                 Info.lvl_req -= 1
             Info.iteration += 1
 
-        return self.end_iteration_processing(double)
+        if Info.lives == 0:
+            Sounds.death_sound.play()
+            return 0
+        if len(Info.snake_blocks) >= Info.lvl_req + 1:
+            Sounds.bonus_sound.play()
+            return 1
+        return -1
 
     def get_damage(self):
         '''
@@ -153,23 +161,6 @@ class Game:
             Info.apple = Food(self.get_random_block(),
                               FoodType.lengthUp)
         return length_flag
-
-    def end_iteration_processing(self, double):
-        '''
-        Iteration end processing
-        '''
-        pygame.display.flip()
-        if not double:
-            self.timer.tick(3 + Info.speed)
-        else:
-            self.timer.tick(1 + Info.speed)
-        if Info.lives == 0:
-            Sounds.death_sound.play()
-            return 0
-        if len(Info.snake_blocks) >= Info.lvl_req + 1:
-            Sounds.bonus_sound.play()
-            return 1
-        return -1
 
     def generate_bonus_food(self, head):
         '''
